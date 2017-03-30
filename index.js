@@ -1,21 +1,21 @@
 'use strict';
 
-var {Platform, NativeModules} = require('react-native');
-var resolveAssetSource = require('react-native/Libraries/Image/resolveAssetSource.js');
+const { Platform, NativeModules } = require('react-native');
+const resolveAssetSource = require('react-native/Libraries/Image/resolveAssetSource.js');
 
-var RCTAudio = NativeModules.Audio;
-var nextKey = 0;
+const RCTAudio = NativeModules.Audio;
+let nextKey = 0;
 
-function Sound(source, onError) {
-    var uri;
+function Sound (source, onError) {
+    let uri;
     if (typeof source === 'number') {
-        var src = resolveAssetSource(source) || {};
+        const src = resolveAssetSource(source) || {};
         uri = src.uri;
         if (!/^http:\/\//.test(uri) && !/^file:\/\//.test(uri)) {
-            if (Platform.OS === "android") {
+            if (Platform.OS === 'android') {
                 uri = uri.replace(/\.[^.]*$/, '');
             } else {
-                uri = 'file://'+uri;
+                uri = 'file://' + uri;
             }
         }
     } else if (typeof source === 'object') {
@@ -24,7 +24,7 @@ function Sound(source, onError) {
         uri = source;
     }
 
-    this._filename = uri||'';
+    this._filename = uri || '';
     this._loaded = false;
     this._key = nextKey++;
     this._duration = -1;
@@ -49,54 +49,54 @@ function Sound(source, onError) {
     });
 }
 
-Sound.prototype.isLoaded = function() {
+Sound.prototype.isLoaded = function () {
     return this._loaded;
 };
 
-Sound.prototype.play = function(onEnd) {
+Sound.prototype.play = function (onEnd) {
     if (this._loaded) {
         RCTAudio.play(this._key, (successfully) => onEnd && onEnd(successfully));
     }
     return this;
 };
 
-Sound.prototype.pause = function() {
+Sound.prototype.pause = function () {
     if (this._loaded) {
         RCTAudio.pause(this._key);
     }
     return this;
 };
 
-Sound.prototype.stop = function() {
+Sound.prototype.stop = function () {
     if (this._loaded) {
         RCTAudio.stop(this._key);
     }
     return this;
 };
 
-Sound.prototype.release = function() {
+Sound.prototype.release = function () {
     if (this._loaded) {
         RCTAudio.release(this._key);
     }
     return this;
 };
 
-Sound.prototype.getDuration = function() {
+Sound.prototype.getDuration = function () {
     return this._duration;
 };
 
-Sound.prototype.getNumberOfChannels = function() {
+Sound.prototype.getNumberOfChannels = function () {
     return this._numberOfChannels;
 };
 
-Sound.prototype.getVolume = function() {
+Sound.prototype.getVolume = function () {
     return this._volume;
 };
 
-Sound.prototype.setVolume = function(value) {
+Sound.prototype.setVolume = function (value) {
     this._volume = value;
     if (this._loaded) {
-        if (Platform.OS === "android") {
+        if (Platform.OS === 'android') {
             RCTAudio.setVolume(this._key, value, value);
         } else {
             RCTAudio.setVolume(this._key, value);
@@ -105,22 +105,22 @@ Sound.prototype.setVolume = function(value) {
     return this;
 };
 
-Sound.prototype.getPan = function() {
+Sound.prototype.getPan = function () {
     return this._pan;
 };
 
-Sound.prototype.setPan = function(value) {
+Sound.prototype.setPan = function (value) {
     if (this._loaded) {
         RCTAudio.setPan(this._key, this._pan = value);
     }
     return this;
 };
 
-Sound.prototype.getNumberOfLoops = function() {
+Sound.prototype.getNumberOfLoops = function () {
     return this._numberOfLoops;
 };
 
-Sound.prototype.setNumberOfLoops = function(value) {
+Sound.prototype.setNumberOfLoops = function (value) {
     this._numberOfLoops = value;
     if (this._loaded) {
         RCTAudio.setNumberOfLoops(this._key, value);
@@ -128,24 +128,24 @@ Sound.prototype.setNumberOfLoops = function(value) {
     return this;
 };
 
-Sound.prototype.getCurrentTime = function(callback) {
+Sound.prototype.getCurrentTime = function (callback) {
     if (this._loaded) {
         RCTAudio.getCurrentTime(this._key, callback);
     }
 };
 
-Sound.prototype.setCurrentTime = function(value) {
+Sound.prototype.setCurrentTime = function (value) {
     if (this._loaded) {
         RCTAudio.setCurrentTime(this._key, value);
     }
     return this;
 };
 
-Sound.enable = function(enabled) {
+Sound.enable = function (enabled) {
     RCTAudio.enable(enabled);
 };
 
-if (Platform.OS !== "android") {
+if (Platform.OS !== 'android') {
     Sound.enable(true);
 }
 
